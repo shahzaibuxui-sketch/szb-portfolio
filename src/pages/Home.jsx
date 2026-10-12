@@ -126,40 +126,48 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TOOLKIT TEASER */}
-      <section className="section">
-        <div className="container teaser">
-          <Reveal className="teaser__left">
-            <p className="eyebrow">Toolkit</p>
-            <h2 className="h2">Built with the boring stuff, on purpose.</h2>
-          </Reveal>
-          <Reveal className="teaser__right">
-            <p className="body">
-              React, Vite, Python, Flask, REST APIs, Figma. No
-              frameworks-of-the-week — just tools that ship.
-            </p>
-            <Link to="/skills" className="link-underline">
-              See all skills <ArrowUpRight size={16} />
-            </Link>
-          </Reveal>
+      {/* TOOLKIT TEASER — wrapped in .container so it lines up with
+          About and What I Do. The divider lines still span the
+          viewport; the text keeps the container padding. */}
+      <section className="section section--teaser">
+        <div className="container">
+          <div className="teaser">
+            <Reveal className="teaser__left">
+              <p className="eyebrow">Toolkit</p>
+              <h2 className="h2">
+                Built with the boring stuff, on purpose.
+              </h2>
+            </Reveal>
+            <Reveal className="teaser__right">
+              <p className="body">
+                React, Vite, Python, Flask, REST APIs, Figma. No
+                frameworks-of-the-week — just tools that ship.
+              </p>
+              <Link to="/skills" className="link-underline">
+                See all skills <ArrowUpRight size={16} />
+              </Link>
+            </Reveal>
+          </div>
         </div>
       </section>
 
-      {/* CLOSING CTA */}
+      {/* CLOSING CTA — same .container as every other section. */}
       <section className="section section--cta">
-        <div className="container cta">
-          <Reveal>
-            <p className="eyebrow">Let's build</p>
-            <h2 className="h2 cta__title">Have something in mind?</h2>
-            <RippleButton
-              as={Link}
-              to="/contact"
-              className="btn--outline btn--lg"
-            >
-              Start a conversation
-              <ArrowRight size={16} className="btn__arrow" />
-            </RippleButton>
-          </Reveal>
+        <div className="container">
+          <div className="cta">
+            <Reveal>
+              <p className="eyebrow">Let's build</p>
+              <h2 className="h2 cta__title">Have something in mind?</h2>
+              <RippleButton
+                as={Link}
+                to="/contact"
+                className="btn--outline btn--lg"
+              >
+                Start a conversation
+                <ArrowRight size={16} className="btn__arrow" />
+              </RippleButton>
+            </Reveal>
+          </div>
         </div>
       </section>
     </div>

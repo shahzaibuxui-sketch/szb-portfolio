@@ -26,9 +26,12 @@
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --dur: 400ms;
+
+  /* Single source of truth for horizontal gutters. */
+  --gutter: clamp(20px, 5vw, 32px);
 }
 
-/* Dark (default) — high contrast text */
+/* Dark (default) */
 [data-theme="dark"] {
   --bg: #000000;
   --bg-soft: #0a0a0a;
@@ -42,6 +45,9 @@
 
   --btn-fill-hover: #ffffff;
   --btn-text-hover: #000000;
+
+  /* Mobile toggle icon color: white on dark. */
+  --nav-toggle-icon: #ffffff;
 }
 
 /* Light */
@@ -58,6 +64,9 @@
 
   --btn-fill-hover: #141414;
   --btn-text-hover: #ffffff;
+
+  /* Mobile toggle icon color: near-black on light. */
+  --nav-toggle-icon: #141414;
 }
 
 /* ---------- Reset ---------- */
@@ -72,6 +81,11 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  width: 100%;
+}
+
+#root {
+  overflow-x: clip;
 }
 
 html {
@@ -160,14 +174,10 @@ p {
 .container {
   width: 100%;
   max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 0 var(--s-5);
-}
-
-@media (min-width: 768px) {
-  .container {
-    padding: 0 var(--s-6);
-  }
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  padding-block: 0;
+  box-sizing: border-box;
 }
 
 .section {
@@ -353,12 +363,7 @@ p {
   transform: scaleX(1);
 }
 
-/* ---------- Reveal (fail-safe) ----------
-   If JS is off, or the IntersectionObserver never fires (tall blocks,
-   browser quirk), the content must still be visible. We do that by
-   making .reveal a no-op when scripting is disabled, and by giving
-   the What I Do text column its own opacity-1 fallback below.
-*/
+/* ---------- Reveal (fail-safe) ---------- */
 .reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -369,7 +374,6 @@ p {
   transform: none;
 }
 
-/* If JS is disabled entirely, skip the reveal animation. */
 @media (scripting: none) {
   .reveal {
     opacity: 1;
@@ -385,7 +389,7 @@ p {
   align-items: flex-start;
   justify-content: center;
   gap: var(--s-3);
-  padding: calc(var(--nav-h) + var(--s-7)) var(--s-5) var(--s-7);
+  padding: calc(var(--nav-h) + var(--s-7)) var(--gutter) var(--s-7);
   max-width: var(--maxw);
   margin: 0 auto;
 }
@@ -404,7 +408,8 @@ p {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 50;
+  /* Header bar sits ABOVE the overlay so the toggle stays clickable. */
+  z-index: 1001;
   transition: background-color 400ms var(--ease),
     border-color 400ms var(--ease), backdrop-filter 400ms var(--ease);
   border-bottom: 1px solid transparent;
@@ -413,6 +418,11 @@ p {
 .nav--solid {
   background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px);
+  border-bottom-color: var(--border);
+}
+
+.nav--open {
+  background: var(--bg);
   border-bottom-color: var(--border);
 }
 
@@ -431,12 +441,15 @@ p {
   background: #ffffff;
 }
 .nav--transparent .theme-toggle,
-.nav--transparent .nav__burger {
+.nav--transparent .nav__toggle {
   border-color: rgba(255, 255, 255, 0.5);
 }
 .nav--transparent .icon-btn:hover,
 .nav--transparent .theme-toggle:hover {
   border-color: rgba(255, 255, 255, 0.9);
+}
+.nav--transparent .nav__toggle {
+  color: #ffffff;
 }
 
 .nav__inner {
@@ -451,11 +464,13 @@ p {
   display: inline-flex;
   align-items: center;
   gap: var(--s-3);
+  min-width: 0;
 }
 
 .nav__logo {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
 }
 .nav__logo img {
   height: 38px;
@@ -477,12 +492,25 @@ p {
 [data-theme="light"] .nav--solid .nav__logo--black {
   display: inline-flex;
 }
+[data-theme="light"] .nav--open .nav__logo--white {
+  display: none;
+}
+[data-theme="light"] .nav--open .nav__logo--black {
+  display: inline-flex;
+}
+[data-theme="dark"] .nav--open .nav__logo--white {
+  display: inline-flex;
+}
+[data-theme="dark"] .nav--open .nav__logo--black {
+  display: none;
+}
 
 .nav__brandtext {
   font-family: var(--font-head);
   font-size: 1.15rem;
   letter-spacing: 0.02em;
   color: var(--text);
+  white-space: nowrap;
 }
 
 .nav__links {
@@ -524,6 +552,7 @@ p {
   display: flex;
   align-items: center;
   gap: var(--s-2);
+  flex-shrink: 0;
 }
 
 .icon-btn {
@@ -564,51 +593,207 @@ p {
   transform: rotate(180deg);
 }
 
-.nav__burger {
+/* ---------------------------------------------------------
+   Mobile toggle (burger / close) — single button, two stacked
+   icons that cross-fade + rotate. Sits in the header at z-index
+   1001, always above the overlay.
+   --------------------------------------------------------- */
+.nav__toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--nav-toggle-icon);
+  background: transparent;
+  z-index: 1001;
+  transition: border-color 300ms var(--ease), color 300ms var(--ease);
+}
+.nav__toggle:hover {
+  border-color: var(--border-strong);
+}
+.nav__toggle:active {
+  transform: scale(0.97);
+}
+/* No orange box after tap — keyboard only. */
+.nav__toggle:focus {
+  outline: none;
+}
+.nav__toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
 }
 
+.nav__toggleicon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transform-origin: center;
+  transition: opacity 200ms var(--ease), transform 200ms var(--ease);
+  will-change: opacity, transform;
+}
+
+/* Default (closed): Menu icon visible, X hidden. */
+.nav__toggleicon--menu {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+.nav__toggleicon--close {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+/* Open: Menu rotates out, X rotates in. */
+.nav__toggle.is-open .nav__toggleicon--menu {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+.nav__toggle.is-open .nav__toggleicon--close {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+@media (max-width: 767px) {
+  .nav__social {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------
+   MOBILE MENU — full-screen overlay (z-index 1000, below the
+   header bar at 1001 so the toggle stays clickable).
+   --------------------------------------------------------- */
 .nav__mobile {
   position: fixed;
-  inset: var(--nav-h) 0 0 0;
+  inset: 0;
+  height: 100dvh;
   background: var(--bg);
-  padding: var(--s-7) var(--s-5);
-  transform: translateY(-8px);
   opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
   pointer-events: none;
-  transition: opacity 300ms var(--ease), transform 400ms var(--ease);
+  transition: opacity 300ms var(--ease), transform 300ms var(--ease),
+    visibility 0s linear 300ms;
+  z-index: 1000;
+  overflow-y: auto;
+  padding-top: var(--nav-h);
 }
 .nav__mobile.is-open {
   opacity: 1;
+  visibility: visible;
   transform: none;
   pointer-events: auto;
+  transition: opacity 300ms var(--ease), transform 300ms var(--ease),
+    visibility 0s linear 0s;
 }
-.nav__mobile ul {
+
+.nav__mobileinner {
+  min-height: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--s-4);
+  justify-content: space-between;
+  padding: var(--s-6) var(--gutter) var(--s-6);
 }
-.nav__mobile a {
-  display: block;
-  font-family: var(--font-head);
-  font-size: 2rem;
-  padding: var(--s-3) 0;
-  color: var(--text-muted);
+
+.nav__mobilelinks {
+  display: flex;
+  flex-direction: column;
+}
+.nav__mobilelinks li {
   border-bottom: 1px solid var(--border);
 }
-.nav__mobile a.is-active,
-.nav__mobile a:hover {
+.nav__mobilelinks a {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: var(--s-3) 0;
+  font-family: var(--font-head);
+  font-size: 2rem;
+  line-height: 1.1;
+  color: var(--text-muted);
+  transition: color 300ms var(--ease), padding-left 300ms var(--ease);
+}
+.nav__mobilelinks a.is-active,
+.nav__mobilelinks a:hover {
   color: var(--text);
+}
+@media (hover: hover) {
+  .nav__mobilelinks a:hover {
+    padding-left: var(--s-2);
+  }
+}
+
+.nav__mobilesocials {
+  display: flex;
+  gap: var(--s-3);
+  margin-top: var(--s-7);
+}
+.nav__mobilesocials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  transition: color 300ms var(--ease), border-color 300ms var(--ease);
+}
+@media (hover: hover) {
+  .nav__mobilesocials a:hover {
+    color: var(--text);
+    border-color: var(--accent);
+  }
 }
 
 @media (min-width: 768px) {
   .nav__links {
     display: flex;
   }
-  .nav__burger {
+  .nav__toggle {
     display: none;
   }
   .nav__mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-h: 64px;
+  }
+
+  .nav__inner {
+    height: 64px;
+  }
+
+  .nav__logo img {
+    height: 44px;
+  }
+
+  .nav__brandtext {
+    font-size: 1.05rem;
+  }
+
+  .nav__actions {
+    gap: var(--s-2);
+  }
+
+  .nav__mobile {
+    padding-top: 64px;
+  }
+}
+
+@media (max-width: 360px) {
+  .nav__brandtext {
     display: none;
   }
 }
@@ -725,19 +910,13 @@ p {
 .hero__scroll {
   position: absolute;
   bottom: var(--s-5);
-  left: var(--s-5);
+  left: var(--gutter);
   z-index: 2;
   font-size: 0.7rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.65);
   writing-mode: vertical-rl;
-}
-
-@media (min-width: 768px) {
-  .hero__scroll {
-    left: var(--s-6);
-  }
 }
 
 /* =========================================================
@@ -785,23 +964,7 @@ p {
 }
 
 /* =========================================================
-   WHAT I DO  — FIXED text visibility
-   ---------------------------------------------------------
-   Root cause: the outer .whatido__row used to be a Reveal
-   (opacity 0 → 1). On tall rows, the IntersectionObserver at
-   the default threshold never added .is-visible, so the whole
-   row stayed at opacity 0. The image still painted because it
-   is a replaced element with intrinsic size; the text did not.
-
-   Fix:
-   - The row is now a plain <div> (see Home.jsx). Its text
-     column is always opacity 1.
-   - Text colours are set explicitly with fallbacks so an
-     undefined variable can never equal the background.
-   - overflow, max-height and height clip are explicitly reset
-     on the text column and its children.
-   - Vertical centering on desktop, stacked under the image
-     on phone.
+   WHAT I DO
    ========================================================= */
 .whatido {
   display: flex;
@@ -813,15 +976,14 @@ p {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--s-5);
-  align-items: center; /* vertically centre image + text on desktop */
-  /* Defensive resets — nothing here may clip or hide the text. */
+  align-items: center;
   overflow: visible;
   max-height: none;
   height: auto;
 }
 
 .whatido__media {
-  overflow: hidden; /* image zoom stays inside the frame */
+  overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   aspect-ratio: 1 / 1;
@@ -834,13 +996,10 @@ p {
   transition: transform 700ms var(--ease);
 }
 
-/* ---------- Text column ---------- */
 .whatido__text {
   display: flex;
   flex-direction: column;
   gap: var(--s-3);
-  /* Guarantee: never clipped, never hidden, never stacked under the
-     image on desktop. */
   position: relative;
   z-index: 1;
   opacity: 1;
@@ -857,8 +1016,6 @@ p {
   opacity: 1;
 }
 
-/* Paragraph: at least 17px, explicit muted colour with fallback,
-   strong enough contrast in both themes. */
 .whatido__text p,
 .whatido__desc {
   margin: 0;
@@ -868,12 +1025,10 @@ p {
   opacity: 1;
 }
 
-/* ---------- "How I work" ---------- */
 .whatido__how {
   margin-top: var(--s-4);
   padding-top: var(--s-4);
   border-top: 1px solid var(--border, rgba(255, 255, 255, 0.16));
-  /* Same defensive resets as the text column. */
   opacity: 1;
   visibility: visible;
   overflow: visible;
@@ -923,8 +1078,6 @@ p {
   font-weight: 500;
 }
 
-/* Desktop: image on one side, text vertically centred on the other.
-   Alternation preserved via .whatido__row--left / --right. */
 @media (min-width: 768px) {
   .whatido__row {
     grid-template-columns: 5fr 7fr;
@@ -951,7 +1104,6 @@ p {
   }
 }
 
-/* Phone: stacked, image first. */
 @media (max-width: 767px) {
   .whatido__row {
     grid-template-columns: 1fr;
@@ -1437,4 +1589,31 @@ p {
   .ripple {
     display: none;
   }
+  /* Icon swap still works instantly, no rotation animation. */
+  .nav__toggleicon {
+    transition: none;
+  }
+}
+
+/* Close cross: dark in light theme while the menu is open */
+html[data-theme="light"] .nav--open .nav__burger,
+html[data-theme="light"] .nav--open .nav__burger * {
+  color: #141414 !important;
+  stroke: #141414 !important;
+}
+
+/* Remove the orange box after tapping (hover/focus/active) */
+.nav--open .nav__burger,
+.nav--open .nav__burger:hover,
+.nav--open .nav__burger:focus,
+.nav--open .nav__burger:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: rgba(20, 20, 20, 0.25) !important;
+}
+html[data-theme="dark"] .nav--open .nav__burger,
+html[data-theme="dark"] .nav--open .nav__burger:hover,
+html[data-theme="dark"] .nav--open .nav__burger:focus,
+html[data-theme="dark"] .nav--open .nav__burger:active {
+  border-color: rgba(255, 255, 255, 0.3) !important;
 }
