@@ -8,7 +8,7 @@ const now = {
   workingOn: [
     "ZaiVault",
     "Invoice Extractor",
-    "Planning a Big Industrial Level Projet",
+    "Planning a Big Industrial Level Project",
     "This portfolio",
   ],
 };
