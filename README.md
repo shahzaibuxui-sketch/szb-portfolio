@@ -4,9 +4,6 @@ My personal portfolio website, built with React and CSS. It showcases my skills,
 
 **Live:** https://szb-labs.netlify.app
 
-![Portfolio preview](./screenshot.png)
-<!-- Add a screenshot of the homepage and save it as screenshot.png in the repo root -->
-
 ## Features
 
 - Dark and light themes
