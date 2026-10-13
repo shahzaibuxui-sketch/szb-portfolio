@@ -1,16 +1,87 @@
-# React + Vite
+# SZB Labs — Personal Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+My personal portfolio website, built with React and CSS. It showcases my skills, projects, and what I'm currently learning, with a clean black-themed design, dark/light modes, and smooth animations.
 
-Currently, two official plugins are available:
+**Live:** https://szb-labs.netlify.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+![Portfolio preview](./screenshot.png)
+<!-- Add a screenshot of the homepage and save it as screenshot.png in the repo root -->
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Dark and light themes
+- Hero section with background images that rotate automatically
+- "What I Do" section: Front End, Backend, and AI
+- Skills page with proficiency levels
+- "My Work" page featuring my top three projects, each with Live and Code buttons
+- Case study pages for each featured project
+- About Me section
+- Downloadable Resume
+- Contact page with email and social links
+- Animations on scroll, hover, and click
+- Fully responsive, including phones
 
-## Expanding the ESLint configuration
+## Featured Projects
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Project | Description | Live | Code |
+|---|---|---|---|
+| **ZaibChat** | Full-stack AI chatbot | [Live](https://zaibchat.netlify.app/) | [Code](https://github.com/shahzaibuxui-sketch/ZaibChat-frontend) |
+| **ZaibHunt** | AI job-hunting agent | [Live](https://zaibhunt.netlify.app/login) | [Code](https://github.com/shahzaibuxui-sketch/ZaibHunt) |
+| **StrikeGear** | Sportswear e-commerce site | [Live](https://shahzaibuxui-sketch.github.io/strikegear/) | [Code](https://github.com/shahzaibuxui-sketch/strikegear) |
+
+## Tech Stack
+
+- **React** (Vite)
+- **React Router** for page navigation
+- **CSS** for all styling and animations
+- **Netlify** for hosting
+
+## Getting Started
+
+```bash
+# Clone the repository
+git clone https://github.com/shahzaibuxui-sketch/szb-portfolio.git
+
+# Go into the project folder
+cd szb-portfolio
+
+# Install dependencies
+npm install
+
+# Start the dev server
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+## Project Structure
+
+```
+szb-portfolio/
+├── public/            # Static files (resume PDF, favicon)
+├── src/
+│   ├── assets/        # Images and logos
+│   ├── data/          # caseStudies.js
+│   ├── components/    # Reusable components
+│   ├── pages/         # Home, Skills, My Work, Contact
+│   └── App.jsx
+└── package.json
+```
+
+## Deployment
+
+Deployed on Netlify, connected to this GitHub repository. Every push to `main` triggers a new build.
+
+## Contact
+
+- **Email:** shahzaibux.ui@gmail.com
+- **LinkedIn:** [linkedin.com/in/shahzaibwaheed](https://linkedin.com/in/shahzaibwaheed)
+- **GitHub:** [@shahzaibuxui-sketch](https://github.com/shahzaibuxui-sketch)
+
+---
+
+© Shahzaib Waheed
